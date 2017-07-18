@@ -1474,31 +1474,31 @@ static int on_process_term(void)
 	gotoblas_quit();
 	return 0;
 }
-#ifdef _WIN64
+#if defined(_WIN64) || defined(ARCH_ARM)
 #pragma comment(linker, "/INCLUDE:_tls_used")
 #else
 #pragma comment(linker, "/INCLUDE:__tls_used")
 #endif
 
-#ifdef _WIN64
+#if defined(_WIN64) || defined(ARCH_ARM)
 #pragma const_seg(".CRT$XLB")
 #else
 #pragma data_seg(".CRT$XLB")
 #endif
 static void (APIENTRY *dll_callback)(HINSTANCE h, DWORD ul_reason_for_call, PVOID pv) = DllMain;
-#ifdef _WIN64
+#if defined(_WIN64) || defined(ARCH_ARM)
 #pragma const_seg()
 #else
 #pragma data_seg()
 #endif
 
-#ifdef _WIN64
+#if defined(_WIN64) || defined(ARCH_ARM)
 #pragma const_seg(".CRT$XTU")
 #else
 #pragma data_seg(".CRT$XTU")
 #endif
 static int(*p_process_term)(void) = on_process_term;
-#ifdef _WIN64
+#if defined(_WIN64) || defined(ARCH_ARM)
 #pragma const_seg()
 #else
 #pragma data_seg()

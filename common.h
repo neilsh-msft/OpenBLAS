@@ -323,7 +323,9 @@ typedef int blasint;
 #endif
 
 #if defined(ARMV7) || defined(ARMV6) || defined(ARMV8) || defined(ARMV5)
+#ifndef YIELDING
 #define YIELDING        asm volatile ("nop;nop;nop;nop;nop;nop;nop;nop; \n");
+#endif
 #endif
 
 #ifdef BULLDOZER

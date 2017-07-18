@@ -25,6 +25,10 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "AIX")
   set(EXTRALIB "${EXTRALIB} -lm")
 endif ()
 
+if (${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")
+  set(NEED_PIC 0)
+endif ()
+
 # TODO: this is probably meant for mingw, not other windows compilers
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 

@@ -33,7 +33,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COMMON_ARM
 #define COMMON_ARM
 
-#if defined(ARMV5) || defined(ARMV6)
+#if defined(ARMV5) || defined(ARMV6) || defined(_MSC_VER)
 
 #define MB
 #define WMB
@@ -51,7 +51,14 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef ASSEMBLER
 
-#if defined(ARMV6) || defined(ARMV7) || defined(ARMV8)
+#if defined(_MSC_VER)
+static __inline unsigned long long rpcc(void) {
+	return __rdpmccntr64(); // use MSVC intrinsic
+};
+#define RPCC_DEFINED
+#endif
+
+#if defined(ARMV6) || defined(ARMV7) || defined(ARMV8) || defined(_MSC_VER) 
 
 static void __inline blas_lock(volatile BLASULONG *address){
 
@@ -59,6 +66,11 @@ static void __inline blas_lock(volatile BLASULONG *address){
 
   do {
     while (*address) {YIELDING;};
+
+#if defined(_MSC_VER)
+    // use intrinsic instead of inline assembly
+    ret = _InterlockedExchange((volatile LONG *)address, 1);
+#else
 
     __asm__ __volatile__(
                          "ldrex r2, [%1]      \n\t"
@@ -68,6 +80,7 @@ static void __inline blas_lock(volatile BLASULONG *address){
                          : "r"(address), "r"(1)
                          : "memory", "r2"
     );
+#endif
 
   } while (ret);
   MB;
@@ -130,7 +143,7 @@ REALNAME:
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
-#if !defined(ARMV5) && !defined(ARMV6) && !defined(ARMV7) && !defined(ARMV8)
+#if !defined(ARMV5) && !defined(ARMV6) && !defined(ARMV7) && !defined(ARMV8) && !defined(_MSC_VER)
 #error "you must define ARMV5, ARMV6, ARMV7 or ARMV8"
 #endif
 
